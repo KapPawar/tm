@@ -41,10 +41,54 @@ export default function Home() {
   useEffect(() => {
     const newTaskList = filtered.map((task, index) => ({
       ...task,
-      id: index,
+      id: index + 1,
     }));
-    setCompleted(newTaskList.filter((task) => task.completed === true));
-    setInProgress(newTaskList.filter((task) => task.completed !== true));
+
+    const comp = newTaskList.filter((task) => task.completed === true);
+    const inProg = newTaskList.filter((task) => task.completed !== true);
+
+    if (comp.length > 0) {
+      setCompleted(comp);
+    } else {
+      setCompleted([
+        {
+          _id: "",
+          id: inProg.length + 1,
+          title: "",
+          description: "",
+          status: "",
+          completed: true,
+          dueDate: "",
+          priority: "",
+          createdAt: "",
+          updatedAt: "",
+        },
+      ]);
+    }
+
+    if (inProg.length > 0) {
+      setInProgress(inProg);
+    } else {
+      setInProgress([
+        {
+          _id: "",
+          id: comp.length + 1,
+          title: "",
+          description: "",
+          status: "",
+          completed: false,
+          dueDate: "",
+          priority: "",
+          createdAt: "",
+          updatedAt: "",
+        },
+      ]);
+
+      // setCompleted(newTaskList.filter((task) => task.completed === true));
+      // setInProgress(inProg);
+    }
+    // setCompleted(newTaskList.filter((task) => task.completed === true));
+    // setInProgress(inProg);
   }, [tasks, priority]);
 
   // Initial setup for priority
@@ -107,7 +151,6 @@ export default function Home() {
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    console.log(event);
     if (!over) return;
 
     const activeList = findList(active.id);
@@ -131,6 +174,61 @@ export default function Home() {
           setCompleted((items) => arrayMove(items, activeIndex, overIndex));
         }
       }
+    } else if (activeList && overList && activeList !== overList) {
+      // Move item between lists
+      const activeTask =
+        activeList === "inProgress"
+          ? inProgress.find((task) => task.id === active.id)
+          : completed.find((task) => task.id === active.id);
+
+      if (!activeTask) return;
+
+      if (overList === "inProgress") {
+        setInProgress((items) => [...items, activeTask]);
+        setCompleted((items) =>
+          items.filter((item) => item.id !== activeTask.id)
+        );
+      } else if (overList === "completed") {
+        setCompleted((items) => [...items, activeTask]);
+        setInProgress((items) =>
+          items.filter((item) => item.id !== activeTask.id)
+        );
+      }
+    }
+
+    // Add placeholder task if list is empty
+    if (inProgress.length === 0) {
+      setInProgress([
+        {
+          _id: "",
+          id: completed.length + 1,
+          title: "",
+          description: "",
+          status: "",
+          completed: false,
+          dueDate: "",
+          priority: "",
+          createdAt: "",
+          updatedAt: "",
+        },
+      ]);
+    }
+
+    if (completed.length === 0) {
+      setCompleted([
+        {
+          _id: "",
+          id: inProgress.length + 1,
+          title: "",
+          description: "",
+          status: "",
+          completed: true,
+          dueDate: "",
+          priority: "",
+          createdAt: "",
+          updatedAt: "",
+        },
+      ]);
     }
 
     setActiveId(null);
@@ -153,9 +251,9 @@ export default function Home() {
       onDragEnd={handleDragEnd}
     >
       <main className="m-6 h-full">
-        <ToastContainer />
+        {/* <ToastContainer /> */}
         <div className="flex justify-between">
-          <h1 className="text-2xl font-bold">All Tasks</h1>
+          <h1 className="text-2xl font-bold">Kanban Board</h1>
           <Filters />
         </div>
 

@@ -11,7 +11,7 @@ function Page() {
   useEffect(() => {
     // Redirect to home page if user is already logged in
     if (user) {
-      router.push("/");
+      router.push("/all-tasks");
     }
   }, [user, router]);
 

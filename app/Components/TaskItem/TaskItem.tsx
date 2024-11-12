@@ -42,7 +42,9 @@ function TaskItem({ id, task }: TaskItemProps) {
       {...attributes}
       {...listeners}
       style={style}
-      className="h-[16rem] px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white m-3"
+      className={`h-[16rem] px-4 py-3 flex flex-col gap-4 shadow-sm bg-[#f9f9f9] rounded-lg border-2 border-white m-3 ${
+        !task.title ? "invisible" : ""
+      }`}
       variants={item}
     >
       <div>
